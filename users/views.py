@@ -161,9 +161,9 @@ def dashboard(request):
             "processing":processing,
         }
         print(context)
-        return render(request, 'landing/landing.html')
+        return render(request, 'dashboard/index.html')
     else:
-        return render(request, 'landing/landing.html')
+        return render(request, '/')
         
 @login_required
 def NewComplaintList(request):
