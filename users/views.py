@@ -161,21 +161,20 @@ def dashboard(request):
             "processing":processing,
         }
         print(context)
-        return render(request, 'dashboard/index.html')
+        return render(request, 'dashboard/index.html', context)
     else:
         return render(request, '/')
         
 @login_required
 def NewComplaintList(request):
     if request.user.is_employee:
-       new_complaints = Complaint.objects.filter(status=1)
+       new_complaints = Complaint.objects.select_related('user_id').filter(status=1)
        context = {
            "new_complaints":new_complaints,
        }
-       print(context)
-       return render(request, 'landing/landing.html')
+       return render(request, 'dashboard/new-complaint-list.html', context)
     else:
-        return render(request, 'landing/landing.html')
+        return render(request, '/')
     
 @login_required
 def ProcessingList(request):
@@ -185,9 +184,9 @@ def ProcessingList(request):
             "processing":processing,
        }
        print(context)
-       return render(request, 'landing/landing.html')
+       return render(request, 'dashboard/processing.html', context)
     else:
-        return render(request, 'landing/landing.html')
+        return render(request, '/')
     
 @login_required
 def CompletedList(request):
@@ -197,6 +196,6 @@ def CompletedList(request):
             "completed":completed,
         }
         print(context)
-        return render(request, 'landing/landing.html')
+        return render(request, 'dashboard/completed.html')
     else:
-        return render(request, 'landing/landing.html')
+        return render(request, '/')

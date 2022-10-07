@@ -36,7 +36,10 @@ urlpatterns = [
     path('main-admin/', user_views.admin_register),
     path('main-adminlogin/', user_views.admin_login,name='mainadmin-login'),
     # path('main-admindashboard/', user_views.dashboard_page,name='mainadmin-dashboard'),
-    path('admin-dashboard/', user_views.dashboard, name="dashboard"),
+    path('dashboard/', user_views.dashboard, name="dashboard"),
+    path('dashboard/new-complaints/', user_views.NewComplaintList, name="new-complaint"),
+    path('dashboard/processing/', user_views.ProcessingList, name="processing"),
+    path('dashboard/completed/', user_views.CompletedList, name="completed"),
     path('complaints/', user_views.Complaints, name='complaint'),
     path('your-complaints/', user_views.YourComplaints, name='your-complaints')
     # path('main-admin/', include('adminusers.urls')),
