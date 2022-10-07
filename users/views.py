@@ -5,7 +5,6 @@ from django.contrib.auth.decorators import login_required
 from complaints.models import User
 from .forms import (UserRegisterForm,
                     UserUpdateForm,
-                    ProfileUpdateForm,
                     AdminLogin,
                     AdminRegister)
 #added now
@@ -53,26 +52,26 @@ def YourComplaints(request):
     }
     return render(request, 'complaint/your_complaints.html', context)
 
-@login_required
-def profile(request):
-    if request.method == 'POST':
-        u_form = UserUpdateForm(request.POST,instance=request.user)
-        p_form = ProfileUpdateForm(request.POST,request.FILES,instance=request.user.profile)
-        if u_form.is_valid() and p_form.is_valid():
-            u_form.save()
-            p_form.save()
-            messages.success(request, f'Your account has been updated!')
-            return redirect('profile')
+# @login_required
+# def profile(request):
+#     if request.method == 'POST':
+#         u_form = UserUpdateForm(request.POST,instance=request.user)
+#         p_form = ProfileUpdateForm(request.POST,request.FILES,instance=request.user.profile)
+#         if u_form.is_valid() and p_form.is_valid():
+#             u_form.save()
+#             p_form.save()
+#             messages.success(request, f'Your account has been updated!')
+#             return redirect('profile')
     
-    else:
-        u_form = UserUpdateForm(instance=request.user)
-        p_form = ProfileUpdateForm(instance=request.user.profile)
+#     else:
+#         u_form = UserUpdateForm(instance=request.user)
+#         p_form = ProfileUpdateForm(instance=request.user.profile)
     
-    context = {
-                'u_form': u_form,
-                'p_form': p_form
-              }
-    return render(request,'profile.html',context)
+#     context = {
+#                 'u_form': u_form,
+#                 'p_form': p_form
+#               }
+#     return render(request,'profile.html',context)
 
 
 def comingSoon(request):
@@ -150,11 +149,54 @@ def admin_login(request):
                 message = 'Login failed!'
     return render(request, 'authentication/login.html', context={'form': form})
 
-def dashboard_page(request):
-    context = {
-        "pk":18
-    }
-    return render(request, 'admindashboard.html', context)
-
-def landing(request):
-    return render(request, 'landing/landing.html')
+@login_required
+def dashboard(request):
+    if request.user.is_employee:
+        new_complaints = Complaint.objects.filter(status=1).first()
+        completed = Complaint.objects.filter(status=3).first()
+        processing = Complaint.objects.filter(status=2).first()
+        context = {
+            "new_complaints":new_complaints,
+            "completed":completed,
+            "processing":processing,
+        }
+        print(context)
+        return render(request, 'landing/landing.html')
+    else:
+        return render(request, 'landing/landing.html')
+        
+@login_required
+def NewComplaintList(request):
+    if request.user.is_employee:
+       new_complaints = Complaint.objects.filter(status=1)
+       context = {
+           "new_complaints":new_complaints,
+       }
+       print(context)
+       return render(request, 'landing/landing.html')
+    else:
+        return render(request, 'landing/landing.html')
+    
+@login_required
+def ProcessingList(request):
+    if request.user.is_employee:
+       processing = Complaint.objects.filter(status=2)
+       context = {
+            "processing":processing,
+       }
+       print(context)
+       return render(request, 'landing/landing.html')
+    else:
+        return render(request, 'landing/landing.html')
+    
+@login_required
+def CompletedList(request):
+    if request.user.is_employee:
+        completed = Complaint.objects.filter(status=3)
+        context = {
+            "completed":completed,
+        }
+        print(context)
+        return render(request, 'landing/landing.html')
+    else:
+        return render(request, 'landing/landing.html')

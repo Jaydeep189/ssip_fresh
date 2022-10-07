@@ -12,32 +12,6 @@ from users.models import Employee
 from .models import User
 
 
-# @login_required
-# def complaint_list(request):
-#     complaint_exists = True
-#     if request.user.profile.is_employee:
-#         employee_id = Employee.objects.get(employee=request.user)
-#         user_complaints = Complaint.objects.filter(assigned_employee=employee_id).order_by('-id')
-
-#     else:
-#         user_complaints = Complaint.objects.filter(
-#             user_id=request.user).order_by('-id')
-
-#     if len(user_complaints) == 0:
-#         complaint_exists = False
-
-#     paginator = Paginator(user_complaints, 3) # Show 25 contacts per page.
-#     page_number = request.GET.get('page')
-#     page_obj = paginator.get_page(page_number)
-#     context = {
-#         'complaints': page_obj, 
-#         'complaint_exists': complaint_exists,
-#         'page_obj': page_obj,
-#     }
-#     print(request.user.first_name is "")
-#     return render(request, 'index.html', context)
-
-
 def complaint_list(request):
     if request.user.is_authenticated:
         complaint = Complaint.objects.all()
@@ -59,29 +33,29 @@ def complaint_detail(request, pk):
     }
     return render(request, 'complaint_detail.html', context)
 
-@login_required
-def status_change(request, pk):
-    complaint = get_object_or_404(Complaint, id=pk)
-    if request.user.profile.is_employee:
-        employee_id = Employee.objects.get(employee=request.user)
-        if employee_id != complaint.assigned_employee:
-            return HttpResponse('<h1>HTTP 403: Access Denied</h1>', status=403)
+# @login_required
+# def status_change(request, pk):
+#     complaint = get_object_or_404(Complaint, id=pk)
+#     if request.user.profile.is_employee:
+#         employee_id = Employee.objects.get(employee=request.user)
+#         if employee_id != complaint.assigned_employee:
+#             return HttpResponse('<h1>HTTP 403: Access Denied</h1>', status=403)
 
-    else:
-        if request.user != complaint.user_id:
-            return HttpResponse('<h1>HTTP 403: Access Denied</h1>', status=403)
+#     else:
+#         if request.user != complaint.user_id:
+#             return HttpResponse('<h1>HTTP 403: Access Denied</h1>', status=403)
 
-    form = request.POST.dict()
-    if 'Solved' in form:
-        print('Solved')
-        complaint.status = 2
-        complaint.save()
-    if 'Pending' in form:
-        print('Pending')
-        complaint.status = 1
-        complaint.save()
-    print()
-    return HttpResponseRedirect(complaint.get_absolute_url())
+#     form = request.POST.dict()
+#     if 'Solved' in form:
+#         print('Solved')
+#         complaint.status = 2
+#         complaint.save()
+#     if 'Pending' in form:
+#         print('Pending')
+#         complaint.status = 1
+#         complaint.save()
+#     print()
+#     return HttpResponseRedirect(complaint.get_absolute_url())
 
 class ComplaintCreateView(LoginRequiredMixin, CreateView):
     model = Complaint

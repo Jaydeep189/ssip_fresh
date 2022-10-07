@@ -27,7 +27,7 @@ urlpatterns = [
     path('register/',user_views.register,name='register'),
     path('', complaint_list, name='complaint-list'),
     path('home/',user_views.home,name='home'),
-    path('profile/',user_views.profile,name='profile'),
+    # path('profile/',user_views.profile,name='profile'),
     path('login/',auth_views.LoginView.as_view(template_name='login.html'),name='login'),
     # new added
     path('admin-login/',user_views.admin_login,name='admin-login'),
@@ -35,7 +35,8 @@ urlpatterns = [
     path('complaints/', include('complaints.urls')),
     path('main-admin/', user_views.admin_register),
     path('main-adminlogin/', user_views.admin_login,name='mainadmin-login'),
-    path('main-admindashboard/', user_views.dashboard_page,name='mainadmin-dashboard'),
+    # path('main-admindashboard/', user_views.dashboard_page,name='mainadmin-dashboard'),
+    path('admin-dashboard/', user_views.dashboard, name="dashboard"),
     path('complaints/', user_views.Complaints, name='complaint'),
     path('your-complaints/', user_views.YourComplaints, name='your-complaints')
     # path('main-admin/', include('adminusers.urls')),
