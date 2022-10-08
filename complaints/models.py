@@ -1,3 +1,4 @@
+from email.policy import default
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
@@ -35,6 +36,7 @@ class Complaint(models.Model):
     image = models.ImageField(default='default.jpg', upload_to='profile_pics')
     # added now
     deadline = models.DateTimeField(auto_now_add=True, blank=True)
+    is_visible = models.BooleanField(default=False)
     # ..    
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

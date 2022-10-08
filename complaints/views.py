@@ -14,7 +14,7 @@ from .models import User
 
 def complaint_list(request):
     if request.user.is_authenticated:
-        complaint = Complaint.objects.all()
+        complaint = Complaint.objects.filter(is_visible=True)
         context = {
         'complaints': complaint
         }

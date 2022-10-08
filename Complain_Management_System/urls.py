@@ -19,14 +19,13 @@ from django.conf.urls.static import static
 from django.urls import path, include
 from users import views as user_views
 # from adminusers import views as adminuser_views
-from complaints.views import complaint_list
+from complaints.views import complaint_list, complaint_detail
 from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path('', user_views.comingSoon,name='comingSoon'),
     path('register/',user_views.register,name='register'),
     path('', complaint_list, name='complaint-list'),
-    path('home/',user_views.home,name='home'),
     # path('profile/',user_views.profile,name='profile'),
     path('login/',auth_views.LoginView.as_view(template_name='login.html'),name='login'),
     # new added
@@ -41,7 +40,9 @@ urlpatterns = [
     path('dashboard/processing/', user_views.ProcessingList, name="processing"),
     path('dashboard/completed/', user_views.CompletedList, name="completed"),
     path('complaints/', user_views.Complaints, name='complaint'),
-    path('your-complaints/', user_views.YourComplaints, name='your-complaints')
+    path('your-complaints/', user_views.YourComplaints, name='your-complaints'),
+    path('dashboard/<int:pk>/', user_views.AdminSingleComplaint , name='dashboard-complaint-details'),
+    path('dashboard/<int:pk>/<str:status>', user_views.StatusChange , name='status-change'),
     # path('main-admin/', include('adminusers.urls')),
 ]
 

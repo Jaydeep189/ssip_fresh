@@ -20,7 +20,7 @@
     </script>
   </head>
   <body>
-    <main class="flex bg-indigo-50">
+    <main class="flex bg-indigo-50 h-screen">
       <div
         class="w-2/12 flex fixed left-0 top-0 z-1 h-screen flex-col justify-between border-r bg-white"
       >
@@ -341,6 +341,18 @@
       </div>
     </main>
 
-    <script src="main.js"></script>
+    <script>
+      function handleStatus() {
+  statusForm = document.getElementById("status-form");
+  if (statusForm.classList.contains("hidden")) {
+    statusForm.classList.remove("hidden");
+  } else {
+    statusForm.classList.add("hidden");
+  }
+}
+function handleChangeStatus(num, id) {
+  window.location.replace(`/dashboard/${id}/${num}`)
+}
+    </script>
   </body>
 </html>

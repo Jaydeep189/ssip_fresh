@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
-from complaints.models import User
+from complaints.models import Feedback, User
 from .forms import (UserRegisterForm,
                     UserUpdateForm,
                     AdminLogin,
@@ -36,11 +36,12 @@ def register(request):
 
 @login_required
 def Complaints(request):
-    complaint = Complaint.objects.all()
-    context = {
-    'complaints': complaint
-    }
-    return render(request, 'complaint/complaints.html', context)
+    if request.user.is_authenticated:
+        complaint = Complaint.objects.filter(is_visible=True)
+        context = {
+        'complaints': complaint
+        }
+        return render(request, 'complaint/complaints.html', context)
 
 @login_required
 def YourComplaints(request):
@@ -52,58 +53,6 @@ def YourComplaints(request):
     }
     return render(request, 'complaint/your_complaints.html', context)
 
-# @login_required
-# def profile(request):
-#     if request.method == 'POST':
-#         u_form = UserUpdateForm(request.POST,instance=request.user)
-#         p_form = ProfileUpdateForm(request.POST,request.FILES,instance=request.user.profile)
-#         if u_form.is_valid() and p_form.is_valid():
-#             u_form.save()
-#             p_form.save()
-#             messages.success(request, f'Your account has been updated!')
-#             return redirect('profile')
-    
-#     else:
-#         u_form = UserUpdateForm(instance=request.user)
-#         p_form = ProfileUpdateForm(instance=request.user.profile)
-    
-#     context = {
-#                 'u_form': u_form,
-#                 'p_form': p_form
-#               }
-#     return render(request,'profile.html',context)
-
-
-def comingSoon(request):
-    context = {
-
-              }
-    return render(request,'coming_soon.html',context)
-
-@login_required
-def home(request):
-    context = {
-                'is_employee': request.user.profile.is_employee
-              }
-    return render(request,'index.html',context)
-
-# new adde/
-# def login_admin(request):
-#     logout(request)
-#     username = password = ''
-#     if request.POST:
-#         username = request.POST['username']
-#         password = request.POST['password']
-
-#         user = authenticate(username=username, password=password)
-#         if user is not None:
-#             if user.is_active:
-#                 login(request, user)
-#                 return HttpResponseRedirect('/main/')
-#     context = {
-#                 "form":AdminLogin
-#               }
-#     return render(request,'admin_login.html', context)
 
 def admin_register(request):
     if request.method=='POST':
@@ -152,9 +101,9 @@ def admin_login(request):
 @login_required
 def dashboard(request):
     if request.user.is_employee:
-        new_complaints = Complaint.objects.filter(status=1).first()
-        completed = Complaint.objects.filter(status=3).first()
-        processing = Complaint.objects.filter(status=2).first()
+        new_complaints = Complaint.objects.filter(status=1).order_by('-id')[:4]
+        completed = Complaint.objects.filter(status=3).order_by('-id')[:4]
+        processing = Complaint.objects.filter(status=2).order_by('-id')[:4]
         context = {
             "new_complaints":new_complaints,
             "completed":completed,
@@ -168,7 +117,7 @@ def dashboard(request):
 @login_required
 def NewComplaintList(request):
     if request.user.is_employee:
-       new_complaints = Complaint.objects.select_related('user_id').filter(status=1)
+       new_complaints = Complaint.objects.filter(status=1).select_related('user_id').order_by('-id')
        context = {
            "new_complaints":new_complaints,
        }
@@ -179,7 +128,7 @@ def NewComplaintList(request):
 @login_required
 def ProcessingList(request):
     if request.user.is_employee:
-       processing = Complaint.objects.filter(status=2)
+       processing = Complaint.objects.filter(status=2).select_related('user_id').order_by('-id')
        context = {
             "processing":processing,
        }
@@ -191,11 +140,33 @@ def ProcessingList(request):
 @login_required
 def CompletedList(request):
     if request.user.is_employee:
-        completed = Complaint.objects.filter(status=3)
+        completed = Complaint.objects.filter(status=3).select_related('user_id').order_by('-id')
         context = {
             "completed":completed,
         }
-        print(context)
-        return render(request, 'dashboard/completed.html')
+        return render(request, 'dashboard/completed.html', context)
     else:
-        return render(request, '/')
+        return redirect('/')
+
+@login_required
+def AdminSingleComplaint(request, pk):
+    if request.user.is_employee:
+        complaint = get_object_or_404(Complaint, id=pk)
+        user = get_object_or_404(User,id=request.user.id)
+        context = {
+            'complaint': complaint,
+            'user' : user
+        }
+        return render(request, 'dashboard/single-complaint.html', context)
+
+@login_required
+def StatusChange(request, pk, status):
+    print("working")
+    if request.user.is_employee:
+        complaint = Complaint.objects.get(pk=pk)
+        complaint.status = status
+        complaint.save()
+        print(complaint)
+        # return redirect('/dashboard/' + str(pk))
+    else:
+        return redirect("/")
